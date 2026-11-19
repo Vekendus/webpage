@@ -1,0 +1,20 @@
+# Frontend dependencies and build output
+node_modules/
+dist/
+
+# Python environments and generated files
+**/.venv/
+**/venv/
+__pycache__/
+*.py[cod]
+
+# Local database and secrets
+*.sqlite3
+.env
+.env.*
+!.env.example
+
+# Uploaded and private image assets
+backend/portfolio/
+backend/about/
+backend/media/
