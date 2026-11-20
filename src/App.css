@@ -255,7 +255,7 @@
 
 .button span,
 .text-link span {
-  font-size: 15px;
+  font-size: 20px;
 }
 
 .button-light {
@@ -351,68 +351,6 @@
   display: flex;
   align-items: end;
 }
-/* ------- Standalone portfolio page ------- */
-  .page-shell {
-    width: min(1120px, 84%);
-    margin: 0 auto;
-    padding: 110px 0;
-  }
-
-  .section-lead {
-    margin-bottom: 40px;
-  }
-
-  .section-lead h2 {
-    margin: 0;
-    font-family: var(--serif);
-    font-size: clamp(36px, 4vw, 54px);
-    font-weight: 400;
-    letter-spacing: -0.04em;
-    line-height: 1.12;
-  }
-
-  .gallery-page {
-    color: var(--ink);
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px;
-  }
-
-  .gallery-card {
-    overflow: hidden;
-    background: #efeae0;
-  }
-
-  .gallery-card img {
-    width: 100%;
-    height: 420px;
-    object-fit: cover;
-  }
-
-  .gallery-card-copy {
-    padding: 20px 20px 26px;
-  }
-
-  .gallery-card-copy p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .gallery-card-copy h3 {
-    margin: 12px 0 0;
-    font-family: var(--serif);
-    font-size: clamp(28px, 3vw, 36px);
-    font-weight: 400;
-    justify-content: space-between;
-    margin-bottom: 33px;
-}
-
 /* ------- Homepage portfolio cards and section headings ------- */
 .section-heading .eyebrow {
   margin-bottom: 12px;
@@ -549,7 +487,7 @@
   font-size: 11px;
 }
 
-/* ------- Homepage services list ------- */
+/* ------- Homepage services ------- */
 .services {
   padding: 128px 0 132px;
 }
@@ -577,7 +515,7 @@
 .service-number,
 .service-detail {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 20px;
 }
 
 .service-title {
@@ -592,28 +530,52 @@
   white-space: nowrap;
 }
 
-.service-page-item {
-  display: flex;
-  min-height: 87px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  border-bottom: 1px solid #d5d2c8;
-}
-
-.service-page-item .service-title {
-  margin: 0;
-}
-
-.service-page-item .service-detail {
-  margin: 7px 0 0;
-}
-
 .service-list a > span:last-child {
   justify-self: end;
 }
 
-/* ------- About page and additional photos ------- */
+/* ------- Homepage contact section ------- */
+.contact {
+  padding: 105px 24px 110px;
+  background: #6a6d55;
+  color: #fff;
+  text-align: center;
+}
+
+.contact .eyebrow {
+  margin-bottom: 24px;
+  color: rgb(255 255 255 / 72%);
+}
+
+.contact h2 {
+  font-size: clamp(42px, 6vw, 74px);
+  line-height: 1.13;
+}
+
+.contact > p:not(.eyebrow) {
+  margin: 19px 0 25px;
+  color: rgb(255 255 255 / 76%);
+  font-size: 25px;
+  line-height: 1.8;
+}
+
+.button-dark {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.button-dark:hover {
+  background: #fff;
+}
+
+/* ------- Shared layout for standalone pages ------- */
+.page-shell {
+  width: min(1120px, 84%);
+  margin: 0 auto;
+  padding: 110px 0;
+}
+
+/* ------- Minusta page ------- */
 .about-page {
   min-height: 75vh;
 }
@@ -689,43 +651,103 @@
   letter-spacing: 0.06em;
 }
 
-/* ------- Contact section and footer ------- */
-.contact {
-  padding: 105px 24px 110px;
-  background: #6a6d55;
-  color: #fff;
-  text-align: center;
+/* ------- Portfolio page ------- */
+.section-lead {
+  margin-bottom: 40px;
 }
 
-.contact .eyebrow {
-  margin-bottom: 24px;
-  color: rgb(255 255 255 / 72%);
+.section-lead h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(36px, 4vw, 54px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
 }
 
-.contact h2 {
-  font-size: clamp(42px, 6vw, 74px);
-  line-height: 1.13;
-}
-
-.contact > p:not(.eyebrow) {
-  margin: 19px 0 25px;
-  color: rgb(255 255 255 / 76%);
-  font-size: 11px;
-  line-height: 1.8;
-}
-
-.button-dark {
-  background: var(--paper);
+.gallery-page {
   color: var(--ink);
 }
 
-.button-dark:hover {
-  background: #fff;
+.gallery-chapter + .gallery-chapter {
+  margin-top: 64px;
 }
 
+.gallery-chapter-heading {
+  margin-bottom: 20px;
+}
+
+.gallery-chapter-heading h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(30px, 3.5vw, 42px);
+  font-weight: 400;
+}
+
+.gallery-chapter-heading p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.gallery-card {
+  overflow: hidden;
+  background: #efeae0;
+}
+
+.gallery-card img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+}
+
+.gallery-card-copy {
+  padding: 20px 20px 26px;
+}
+
+.gallery-card-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.gallery-card-copy h3 {
+  margin: 12px 0 33px;
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 400;
+}
+
+/* ------- Palvelut page ------- */
+.service-page-item {
+  display: flex;
+  min-height: 87px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #d5d2c8;
+}
+
+.service-page-item .service-title {
+  margin: 0;
+}
+
+.service-page-item .service-detail {
+  margin: 7px 0 0;
+}
+
+/* ------- Site footer ------- */
 .site-footer {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 20px;
   padding: 30px 6.2%;
@@ -737,20 +759,16 @@
   justify-self: start;
 }
 
-.site-footer > p,
-.site-footer > a:not(.wordmark),
 .copyright {
   margin: 0;
   font-size: 9px;
 }
 
-.site-footer > p {
-  color: rgb(245 242 235 / 65%);
-  text-align: center;
-}
-
-.site-footer > a:not(.wordmark) {
+.footer-back-to-top {
   justify-self: end;
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.04em;
 }
 
 .copyright {
@@ -762,12 +780,12 @@
 
 /* ------- Tablet and mobile layout ------- */
 @media (max-width: 760px) {
+  /* Shared navigation */
   .site-header {
     padding: 22px 6%;
   }
 
-
-
+  /* Etusivu */
   .hero {
     min-height: 680px;
     min-height: 100svh;
@@ -843,25 +861,6 @@
     grid-template-columns: 1fr;
   }
 
-  .about-page {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
-
-  .about-page .about-image-wrap,
-  .about-page .about-image-wrap img {
-    min-height: 360px;
-  }
-
-  .about-page .about-copy {
-    padding: 25px 0 0;
-  }
-
-  .about-photo-gallery {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
   .about-image-wrap,
   .about-image-wrap img {
     min-height: 440px;
@@ -894,15 +893,31 @@
     padding: 80px 20px;
   }
 
+  /* Minusta */
+  .about-page {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .about-page .about-image-wrap,
+  .about-page .about-image-wrap img {
+    min-height: 360px;
+  }
+
+  .about-page .about-copy {
+    padding: 25px 0 0;
+  }
+
+  .about-photo-gallery {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  /* Footer */
   .site-footer {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
     padding: 28px 7%;
   }
-
-  .site-footer > p {
-    display: none;
-  }
-
 }
 
 /* ------- Small phone adjustments ------- */
@@ -919,6 +934,11 @@
   .story-grid {
     grid-template-columns: 1fr;
     gap: 28px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
 
   .story-card-2,
@@ -943,5 +963,4 @@
   .copyright {
     font-size: 8px;
   }
-
 }

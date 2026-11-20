@@ -1,29 +1,66 @@
 from django.db import models
 
 
-class Photo(models.Model):
+class GalleryChapter(models.Model):
     title = models.CharField("otsikko", max_length=150)
-    slot_code = models.CharField(
-        "etusivun diaesityksen paikka",
-        max_length=10,
-        unique=True,
-        null=True,
-        blank=True,
-        help_text="Valitse 01–04, jos kuva näytetään etusivun diaesityksessä.",
+    description = models.TextField("kuvaus", blank=True)
+    is_published = models.BooleanField("julkaistu", default=True)
+    display_order = models.PositiveIntegerField("järjestys", default=0)
+
+    class Meta:
+        verbose_name = "portfolio-luku"
+        verbose_name_plural = "portfolio-luvut"
+        ordering = ("display_order", "id")
+
+    def __str__(self):
+        return self.title
+
+
+class PortfolioPhoto(models.Model):
+    chapter = models.ForeignKey(
+        GalleryChapter,
+        on_delete=models.PROTECT,
+        related_name="photos",
+        verbose_name="portfolio-luku",
     )
+    title = models.CharField("otsikko", max_length=150)
     image = models.ImageField("kuva", upload_to="portfolio/")
     description = models.TextField("kuvausteksti", blank=True)
-    is_published = models.BooleanField(
-        "julkaistu sivustolla",
-        default=True,
-        help_text="Poista valinta piilottaaksesi kuvan myös etusivun diaesityksestä.",
-    )
-    show_in_gallery = models.BooleanField("näytä portfoliossa", default=True)
+    is_published = models.BooleanField("julkaistu", default=True)
     display_order = models.PositiveIntegerField("järjestys", default=0)
 
     class Meta:
         verbose_name = "portfolio-kuva"
         verbose_name_plural = "portfolio-kuvat"
+        ordering = ("display_order", "title")
+
+    def __str__(self):
+        return self.title
+
+
+class SlideshowPhoto(models.Model):
+    SLOT_CODE_CHOICES = (
+        ("01", "01"),
+        ("02", "02"),
+        ("03", "03"),
+        ("04", "04"),
+    )
+
+    title = models.CharField("otsikko", max_length=150)
+    slot_code = models.CharField(
+        "diaesityksen paikka",
+        max_length=2,
+        choices=SLOT_CODE_CHOICES,
+        unique=True,
+        help_text="Valitse diaesityksen paikka 01–04.",
+    )
+    image = models.ImageField("kuva", upload_to="slideshow/")
+    is_published = models.BooleanField("julkaistu", default=True)
+
+    class Meta:
+        verbose_name = "diaesityksen kuva"
+        verbose_name_plural = "diaesityksen kuvat"
+        ordering = ("slot_code",)
 
     def __str__(self):
         return self.title
@@ -84,3 +121,78 @@ class Service(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class OtherPageContent(models.Model):
+    gallery_eyebrow = models.CharField(
+        "portfoliosivun yläteksti",
+        max_length=80,
+        default="GALLERIA",
+    )
+    gallery_heading = models.CharField(
+        "portfoliosivun otsikko",
+        max_length=200,
+        default="Valokuvia, joissa on tunnetta.",
+    )
+    gallery_empty_message = models.CharField(
+        "portfoliosivun tyhjän gallerian teksti",
+        max_length=200,
+        default="Portfolio-kuvia ei ole vielä julkaistu.",
+    )
+    services_heading = models.CharField(
+        "palvelusivun otsikko",
+        max_length=160,
+        default="Palvelut",
+    )
+    services_empty_message = models.CharField(
+        "palvelusivun tyhjän listan teksti",
+        max_length=200,
+        default="Palveluiden tietoja ei ole vielä lisätty.",
+    )
+    about_eyebrow = models.CharField(
+        "minusta-sivun yläteksti",
+        max_length=100,
+        default="HILTUNEN PHOTOGRAPHY",
+    )
+    about_photos_eyebrow = models.CharField(
+        "minusta-sivun kuvien yläteksti",
+        max_length=100,
+        default="HILTUNEN PHOTOGRAPHY",
+    )
+    about_photos_heading = models.CharField(
+        "minusta-sivun kuvien otsikko",
+        max_length=160,
+        default="Kuvia minusta",
+    )
+    contact_heading = models.CharField(
+        "yhteystietosivun otsikko",
+        max_length=160,
+        default="Yhteystiedot",
+    )
+    contact_intro = models.TextField(
+        "yhteystietosivun esittelyteksti",
+        blank=True,
+        default="",
+    )
+
+    class Meta:
+        verbose_name = "muiden sivujen tekstisisältö"
+        verbose_name_plural = "muiden sivujen tekstisisältö"
+
+    def __str__(self):
+        return "Other page text and headings"
+
+
+class ContactLink(models.Model):
+    label = models.CharField("linkin teksti", max_length=100)
+    url = models.URLField("linkin osoite", max_length=500)
+    is_published = models.BooleanField("julkaistu", default=True)
+    display_order = models.PositiveIntegerField("järjestys", default=0)
+
+    class Meta:
+        verbose_name = "yhteystietolinkki"
+        verbose_name_plural = "yhteystietolinkit"
+        ordering = ("display_order", "id")
+
+    def __str__(self):
+        return self.label

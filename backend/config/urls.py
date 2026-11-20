@@ -18,13 +18,21 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
-from gallery.views import about_content, photo_list, service_list
+from gallery.views import (
+    about_content,
+    other_page_content,
+    portfolio_gallery,
+    service_list,
+    slideshow_photo_list,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/photos/", photo_list, name="photo-list"),
+    path("api/slideshow/", slideshow_photo_list, name="slideshow-photo-list"),
+    path("api/portfolio/", portfolio_gallery, name="portfolio-gallery"),
     path("api/about/", about_content, name="about-content"),
     path("api/services/", service_list, name="service-list"),
+    path("api/pages/", other_page_content, name="other-page-content"),
 ]
 
 if settings.DEBUG:

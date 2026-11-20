@@ -9,14 +9,14 @@ function ArrowIcon() {
 function App() {
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
   const [previousHeroSlide, setPreviousHeroSlide] = useState(null);
-  const [photos, setPhotos] = useState([]);
+  const [slideshowPhotos, setSlideshowPhotos] = useState([]);
   const [about, setAbout] = useState(null);
   const [services, setServices] = useState([]);
 
   useEffect(() => {
-    fetchJson("/api/photos/")
-      .then(setPhotos)
-      .catch((error) => console.error("Kuvien lataus epäonnistui:", error));
+    fetchJson("/api/slideshow/")
+      .then(setSlideshowPhotos)
+      .catch((error) => console.error("Diaesityskuvien lataus epäonnistui:", error));
     fetchJson("/api/about/")
       .then(setAbout)
       .catch((error) => console.error("Esittelytietojen lataus epäonnistui:", error));
@@ -25,10 +25,7 @@ function App() {
       .catch((error) => console.error("Palveluiden lataus epäonnistui:", error));
   }, []);
 
-  const heroPhotos = photos.filter((photo) =>
-    ["01", "02", "03", "04"].includes(photo.slot_code)
-  );
-  const galleryPhotos = photos.filter((photo) => photo.show_in_gallery);
+  const heroPhotos = slideshowPhotos;
   useEffect(() => {
     if (heroPhotos.length < 2) return;
 
@@ -62,15 +59,14 @@ function App() {
           />
           <div className="hero-shade" />
           <div className="hero-content">
-            <p className="eyebrow">Oman näköistä kuvaamista · SUOMI</p>
+            <p className="eyebrow">Pieniä hetkiä, suuria tarinoita</p>
             <h1>
               Tehdään
               <br />
               onnellisuudesta <em> ikuista.</em>
             </h1>
             <p className="hero-copy">
-              Aitoja kohtaamisia ja pieniä yksityiskohtia — tarinoita, joihin on
-              ihana palata.
+              Rakkauden täyteisiä hetkiä ja pieniä yksityiskohtia - tarinoita joihin on ihana palata.
             </p>
           </div>
           <p className="hero-caption">VALOA, LÄHEISYYTTÄ JA ELÄMÄÄ</p>
@@ -92,22 +88,8 @@ function App() {
         </section>
 
         <section className="gallery section-wrap" id="galleria">
-          <div className="section-heading">
-          </div>
-          <div className="story-grid">
-            {galleryPhotos.map((photo, index) => (
-              <article
-                className={`story-card story-card-${index + 1}`}
-                key={photo.id}
-              >
-                <img src={photo.image} alt={photo.title} loading="lazy" />
-                <p className="eyebrow">{photo.description || "PORTFOLIO"}</p>
-                <div className="story-caption">
-                  <h3>{photo.title}</h3>
-                </div>
-              </article>
-            ))}
-          </div>
+          <div className="section-heading" />
+          <div className="story-grid" />
         </section>
 
         <section className="about" id="about">
@@ -141,7 +123,6 @@ function App() {
               <p className="eyebrow">KUVAUSPALVELUT</p>
               <h2>Sinun tärkeät hetkesi</h2>
             </div>
-            <p className="section-note">Kuvaus suunnitellaan aina yhdessä.</p>
           </div>
           <div className="service-list">
             {services.slice(0, 3).map((service, index) => (
@@ -166,7 +147,7 @@ function App() {
             <em>ansaitsee tulla nähdyksi.</em>
           </h2>
 
-          <a className="button button-dark" href="mailto:">
+          <a className="button button-dark" href="/yhteystiedot">
             Ota yhteyttä <ArrowIcon />
           </a>
         </section>
@@ -177,8 +158,9 @@ function App() {
           <span>HILTUNEN</span>
           <span className="wordmark-subtitle">PHOTOGRAPHY</span>
         </a>
-        <p>Valokuvia, jotka tuntuvat.</p>
-        <a href="#alku">Takaisin alkuun ↑</a>
+        <a className="footer-back-to-top" href="#alku">
+          Takaisin alkuun ↑
+        </a>
         <span className="copyright">
           © {new Date().getFullYear()} Hiltunen Photography
         </span>
