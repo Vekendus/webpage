@@ -11,9 +11,15 @@ from .models import (
     SlideshowPhoto,
 )
 
+admin.site.site_header = "Hiltunen Photography | Sisällönhallinta"
+admin.site.site_title = "Hiltunen Photography"
+admin.site.index_title = "Valitse muokattava sisältö"
+
 
 class PortfolioPhotoInline(admin.TabularInline):
     model = PortfolioPhoto
+    verbose_name = "portfolio-kuva"
+    verbose_name_plural = "Tämän luvun kuvat"
     fields = ("title", "image", "description", "is_published", "display_order")
     extra = 1
     ordering = ("display_order", "title")
@@ -27,6 +33,10 @@ class GalleryChapterAdmin(admin.ModelAdmin):
     search_fields = ("title", "description")
     ordering = ("display_order", "id")
     inlines = (PortfolioPhotoInline,)
+    fieldsets = (
+        ("Kategorian tiedot", {"fields": ("title", "description", "cover_image")}),
+        ("Julkaisu ja järjestys", {"fields": ("is_published", "display_order")}),
+    )
 
 
 @admin.register(PortfolioPhoto)
@@ -36,6 +46,13 @@ class PortfolioPhotoAdmin(admin.ModelAdmin):
     list_filter = ("chapter", "is_published")
     search_fields = ("title", "description")
     ordering = ("chapter__display_order", "display_order", "title")
+    fieldsets = (
+        ("Kuvan tiedot", {"fields": ("title", "image", "description")}),
+        (
+            "Portfolio-sijainti ja julkaisu",
+            {"fields": ("chapter", "is_published", "display_order")},
+        ),
+    )
 
 
 @admin.register(SlideshowPhoto)
@@ -45,10 +62,22 @@ class SlideshowPhotoAdmin(admin.ModelAdmin):
     list_filter = ("is_published",)
     search_fields = ("title",)
     ordering = ("slot_code",)
+    fieldsets = (
+        ("Diaesityksen kuva", {"fields": ("title", "image", "slot_code")}),
+        ("Näkyvyys", {"fields": ("is_published",)}),
+    )
 
 
 @admin.register(AboutContent)
 class AboutContentAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (
+            "Esittelytekstit",
+            {"fields": ("heading", "short_text", "body")},
+        ),
+        ("Esittelykuva", {"fields": ("image", "image_alt")}),
+    )
+
     def has_add_permission(self, request):
         return not AboutContent.objects.exists()
 
@@ -71,6 +100,10 @@ class ServiceAdmin(admin.ModelAdmin):
     list_filter = ("is_published",)
     search_fields = ("title", "description")
     ordering = ("display_order", "title")
+    fieldsets = (
+        ("Palvelun tiedot", {"fields": ("title", "description", "price")}),
+        ("Julkaisu ja järjestys", {"fields": ("is_published", "display_order")}),
+    )
 
 
 @admin.register(OtherPageContent)
@@ -108,3 +141,7 @@ class ContactLinkAdmin(admin.ModelAdmin):
     list_filter = ("is_published",)
     search_fields = ("label", "url")
     ordering = ("display_order", "id")
+    fieldsets = (
+        ("Linkin tiedot", {"fields": ("label", "url")}),
+        ("Julkaisu ja järjestys", {"fields": ("is_published", "display_order")}),
+    )

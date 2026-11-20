@@ -45,15 +45,22 @@ def portfolio_gallery(request):
             }
             for photo in chapter.photos.all()
         ]
-        if photos:
-            data.append(
-                {
-                    "id": chapter.id,
-                    "title": chapter.title,
-                    "description": chapter.description,
-                    "photos": photos,
-                }
-            )
+        if chapter.cover_image:
+            cover_image = chapter.cover_image.url
+        elif photos:
+            cover_image = photos[0]["image"]
+        else:
+            cover_image = None
+
+        data.append(
+            {
+                "id": chapter.id,
+                "title": chapter.title,
+                "description": chapter.description,
+                "cover_image": cover_image,
+                "photos": photos,
+            }
+        )
     return JsonResponse(data, safe=False)
 
 
@@ -130,7 +137,9 @@ def other_page_content(request):
                     "label": link.label,
                     "url": link.url,
                 }
-                for link in ContactLink.objects.filter(is_published=True)
+                for link in ContactLink.objects.filter(
+                    is_published=True
+                ).exclude(url="")
             ],
         },
     }

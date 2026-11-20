@@ -28,11 +28,22 @@ function SiteHeader({ isHome }) {
       <button
         className="menu-toggle"
         type="button"
+        aria-label={menuOpen ? "Sulje valikko" : "Avaa valikko"}
         aria-expanded={menuOpen}
         aria-controls="main-menu"
         onClick={() => setMenuOpen((open) => !open)}
       >
-        {menuOpen ? "Sulje valikko" : "Valikko"}
+        <svg className="menu-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <g className="menu-lines">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </g>
+          <g className="menu-cross">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </g>
+        </svg>
       </button>
       <button
         className={`menu-backdrop${menuOpen ? " is-open" : ""}`}
@@ -47,18 +58,20 @@ function SiteHeader({ isHome }) {
         aria-label="Päänavigointi"
         aria-hidden={!menuOpen}
       >
-        <button
-          className="menu-close"
-          type="button"
-          onClick={() => setMenuOpen(false)}
-        >
-          Sulje valikko <span aria-hidden="true">×</span>
-        </button>
         <a href="/" onClick={() => setMenuOpen(false)}>Pääsivu</a>
         <a href="/minusta" onClick={() => setMenuOpen(false)}>Minusta</a>
         <a href="/portfolio" onClick={() => setMenuOpen(false)}>Portfolio</a>
         <a href="/palvelut" onClick={() => setMenuOpen(false)}>Palvelut</a>
         <a href="/yhteystiedot" onClick={() => setMenuOpen(false)}>Ota yhteyttä</a>
+        {import.meta.env.MODE !== "demo" && (
+          <a
+            className="nav-admin-link"
+            href="/admin/"
+            onClick={() => setMenuOpen(false)}
+          >
+            Ylläpito
+          </a>
+        )}
       </nav>
     </header>
   );

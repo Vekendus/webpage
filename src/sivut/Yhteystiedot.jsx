@@ -20,7 +20,7 @@ function Yhteystiedot() {
       {contactContent?.links?.map((link) => (
         <p key={link.id}>
           <a
-            className="text-link"
+            className="contact-link"
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"

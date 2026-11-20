@@ -1,0 +1,112 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'admin/css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'gallery/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+  <div id="content-main" class="friendly-dashboard">
+    <section class="dashboard-welcome">
+      <h1>Tervetuloa sisällönhallintaan</h1>
+      <p>Valitse alta, mitä haluat päivittää. Tallenna muutokset muokkaussivun alalaidasta.</p>
+    </section>
+
+    {% if perms.gallery.view_slideshowphoto or perms.gallery.view_aboutcontent or perms.gallery.view_service %}
+      <section class="dashboard-group">
+        <h2>Etusivu ja palvelut</h2>
+        <div class="task-card-grid">
+          {% if perms.gallery.view_slideshowphoto %}
+            <a class="task-card" href="{% url 'admin:gallery_slideshowphoto_changelist' %}">
+              <strong>Etusivun kuvat</strong>
+              <span>Lisää tai vaihda diaesityksen kuvia (paikat 01–04).</span>
+            </a>
+          {% endif %}
+          {% if perms.gallery.view_aboutcontent %}
+            <a class="task-card" href="{% url 'admin:gallery_aboutcontent_changelist' %}">
+              <strong>Esittelyteksti ja pääkuva</strong>
+              <span>Päivitä etusivun ja Minusta-sivun esittelyä.</span>
+            </a>
+          {% endif %}
+          {% if perms.gallery.view_service %}
+            <a class="task-card" href="{% url 'admin:gallery_service_changelist' %}">
+              <strong>Palvelut ja hinnat</strong>
+              <span>Muokkaa palveluiden nimiä, kuvauksia ja hintoja.</span>
+            </a>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if perms.gallery.view_gallerychapter or perms.gallery.view_portfoliophoto %}
+      <section class="dashboard-group">
+        <h2>Portfolio</h2>
+        <div class="task-card-grid">
+          {% if perms.gallery.view_gallerychapter %}
+            <a class="task-card" href="{% url 'admin:gallery_gallerychapter_changelist' %}">
+              <strong>Portfolion kategoriat ja kansikuvat</strong>
+              <span>Avaa kategoria lisätäksesi ja järjestääksesi sen kuvia.</span>
+            </a>
+          {% endif %}
+          {% if perms.gallery.view_portfoliophoto %}
+            <a class="task-card" href="{% url 'admin:gallery_portfoliophoto_changelist' %}">
+              <strong>Kaikki portfolio-kuvat</strong>
+              <span>Etsi, muokkaa tai poista portfolio-kuvia.</span>
+            </a>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if perms.gallery.view_aboutphoto or perms.gallery.view_otherpagecontent or perms.gallery.view_contactlink %}
+      <section class="dashboard-group">
+        <h2>Muut sivut</h2>
+        <div class="task-card-grid">
+          {% if perms.gallery.view_aboutphoto %}
+            <a class="task-card" href="{% url 'admin:gallery_aboutphoto_changelist' %}">
+              <strong>Minusta-sivun lisäkuvat</strong>
+              <span>Lisää ja järjestä Minusta-sivun kuvia.</span>
+            </a>
+          {% endif %}
+          {% if perms.gallery.view_otherpagecontent %}
+            <a class="task-card" href="{% url 'admin:gallery_otherpagecontent_changelist' %}">
+              <strong>Sivujen otsikot ja tekstit</strong>
+              <span>Muokkaa sivujen otsikoita ja tyhjän sisällön viestejä.</span>
+            </a>
+          {% endif %}
+          {% if perms.gallery.view_contactlink %}
+            <a class="task-card" href="{% url 'admin:gallery_contactlink_changelist' %}">
+              <strong>Yhteystietolinkit</strong>
+              <span>Muokkaa yhteystietosivun linkkejä.</span>
+            </a>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if app_list %}
+      <details class="dashboard-all-tools">
+        <summary>Kaikki hallintanäkymät</summary>
+        <p>Valitse tämä, jos et löydä etsimääsi yllä olevista kohdista.</p>
+        {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+      </details>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+  <div id="content-related">
+    <div class="module dashboard-help">
+      <h2>Vinkki</h2>
+      <p><strong>Julkaistu</strong> tarkoittaa, että sisältö näkyy sivuston kävijöille.</p>
+      <p><strong>Järjestys</strong> määrittää, missä järjestyksessä sisältö näytetään. Pienempi numero tulee ensin.</p>
+    </div>
+  </div>
+{% endblock %}

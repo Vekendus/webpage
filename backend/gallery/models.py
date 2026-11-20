@@ -4,6 +4,11 @@ from django.db import models
 class GalleryChapter(models.Model):
     title = models.CharField("otsikko", max_length=150)
     description = models.TextField("kuvaus", blank=True)
+    cover_image = models.ImageField(
+        "kansikuva",
+        upload_to="portfolio/covers/",
+        blank=True,
+    )
     is_published = models.BooleanField("julkaistu", default=True)
     display_order = models.PositiveIntegerField("järjestys", default=0)
 
@@ -185,7 +190,13 @@ class OtherPageContent(models.Model):
 
 class ContactLink(models.Model):
     label = models.CharField("linkin teksti", max_length=100)
-    url = models.URLField("linkin osoite", max_length=500)
+    url = models.URLField(
+        "linkin osoite",
+        max_length=500,
+        blank=True,
+        default="",
+        help_text="Lisää koko osoite, esimerkiksi https://instagram.com/oma-tili.",
+    )
     is_published = models.BooleanField("julkaistu", default=True)
     display_order = models.PositiveIntegerField("järjestys", default=0)
 

@@ -41,7 +41,7 @@ function App() {
         <section className="hero" id="alku">
           {previousHeroSlide !== null && (
             <img
-              className="hero-image hero-image-leaving"
+              className={`hero-image hero-image-slide-${previousHeroSlide + 1} hero-image-leaving`}
               src={heroPhotos[previousHeroSlide]?.image}
               alt=""
               aria-hidden="true"
@@ -49,7 +49,7 @@ function App() {
             />
           )}
           <img
-            className={`hero-image${previousHeroSlide !== null ? " hero-image-entering" : ""}`}
+            className={`hero-image hero-image-slide-${activeHeroSlide + 1}${previousHeroSlide !== null ? " hero-image-entering" : ""}`}
             src={
               heroPhotos[activeHeroSlide]?.image ??
                 "https://drive.google.com/thumbnail?id=1inyRz6tVAllbTsorqybvIaD7voqZg8S3&sz=w1200"
@@ -77,14 +77,20 @@ function App() {
 
         <section className="intro section-wrap">
           <p className="eyebrow">HILTUNEN PHOTOGRAPHY</p>
-          <h2>
-            Kauneimmat kuvat eivät pyydä poseeraamaan.
-            <span> Ne antavat olla oma itsesi.</span>
-          </h2>
-          <p className="intro-copy">
-            Minun kanssani sinun ei tarvitse osata olla kameran edessä —
-            riittää, että tulet paikalle.
-          </p>
+          <img
+            className="intro-photo"
+            src="/images/home-intro.jpg"
+            alt="Pari tanssii luonnonvalossa metsäaukealla."
+            loading="lazy"
+          />
+          <div className="intro-content">
+            <h2>
+              Kauneimmat kuvat syntyvät vähiten suunnitelluissa hetkissä
+            </h2>
+            <p className="intro-copy">
+              Valokuvia joissa näkyy aitous, persoonallisuus ja ennen kaikkea rakkaus.
+            </p>
+          </div>
         </section>
 
         <section className="gallery section-wrap" id="galleria">
@@ -111,8 +117,8 @@ function App() {
               {about?.short_text ||
                 "Minulle tärkeintä on, että tunnet olosi nähdyksi — ja saat kuvia, joissa tunnistat itsesi."}
             </p>
-            <a className="text-link" href="#yhteys">
-              Kerro tarinasi <ArrowIcon />
+            <a className="about-more-link" href="/minusta">
+              Lisää minusta <ArrowIcon />
             </a>
           </div>
         </section>
@@ -125,11 +131,8 @@ function App() {
             </div>
           </div>
           <div className="service-list">
-            {services.slice(0, 3).map((service, index) => (
+            {services.slice(0, 3).map((service) => (
               <a href="#yhteys" key={service.id}>
-                <span className="service-number">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
                 <span className="service-title">{service.title}</span>
                 <span className="service-detail">{service.description}</span>
                 <span className="service-price">{service.price}</span>

@@ -27,15 +27,20 @@ python manage.py runserver
 
 Open `http://127.0.0.1:8000/admin/` and sign in with a Django staff account.
 An administrator can create one with `python manage.py createsuperuser`.
+You can also open **Ylläpito** from the website's menu.
+The Admin home groups common tasks into simple cards; expand **Kaikki
+hallintanäkymät** to see the full list of editable content types.
 
 - **Diaesityksen kuvat**: add up to four photos, assign each a unique slot
   (`01`–`04`), and publish them to show them in the homepage hero. Slideshow
   photos are managed separately from portfolio photos.
 - **Portfolio-luvut**: create, delete, and order the chapters shown on the
-  Portfolio page, such as Hääkuvat, Perhekuvat, or Parikuvat. Change a
-  chapter's **Display order** in the list to move it. Publish a chapter to show
-  it. Open a chapter to add, edit, publish, reorder, or delete its photos
-  directly in the chapter editor.
+  Portfolio page, such as Hääkuvat, Perhekuvat, or Parikuvat. Upload an
+  optional **Kansikuva** for each chapter; until one is added, its first
+  published photo is used as the cover. Visitors can open a chapter card to
+  view and scroll through its photos. Change a chapter's **Display order** in
+  the list to move it. Open a chapter in Admin to add, edit, publish, reorder,
+  or delete its photos.
 - **Portfolio-kuvat**: photos can also be managed from this separate list.
   Only published photos in published chapters appear on the Portfolio page;
   these photos do not appear on the homepage.
@@ -47,15 +52,37 @@ An administrator can create one with `python manage.py createsuperuser`.
   “Is published” and “Display order” to control what appears and in what order.
 - **Other page text**: edit the headings, labels, and empty-state messages for
   Portfolio, Services, About, and Contact under **Muiden sivujen tekstisisältö**.
-- **Contact links**: add or edit links such as Instagram under
-  **Yhteystietolinkit**. Use “Is published” and “Display order” to control
-  which links appear and their order.
+- **Contact links**: fill in the prepared Website, Facebook, TikTok, WhatsApp,
+  and Pinterest entries under **Yhteystietolinkit**, or add another link.
+  Add the full URL, then use “Is published” and “Display order” to control
+  which links appear and their order. Empty links stay hidden.
 
 The frontend must also be running (`npm run dev`) to preview these changes.
 Install backend dependencies from the `backend` folder with
 `pip install -r requirements.txt`. Set `DJANGO_SECRET_KEY` in the environment
 for any hosted environment; the development fallback in settings is not for
 production.
+
+## Temporary client demo
+
+Start Django locally on `127.0.0.1:8000`, then run these commands from the
+project root:
+
+```sh
+npm run build:demo
+npm run preview:demo
+```
+
+In another terminal, create a temporary public link:
+
+```sh
+cloudflared tunnel --url http://127.0.0.1:4173
+```
+
+Share the `trycloudflare.com` URL printed by Cloudflare. The demo build hides
+the Admin link, and its preview server proxies only the public API and media.
+Keep Django, Vite Preview, and Cloudflare Tunnel running while the client views
+the demo; the public link expires when the tunnel stops.
 
 ## Learn the files
 

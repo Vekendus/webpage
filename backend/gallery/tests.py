@@ -1,4 +1,5 @@
-from django.test import TestCase
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
 
 from .models import (
     AboutContent,
@@ -46,6 +47,9 @@ class PublicContentApiTests(TestCase):
         )
 
     def test_portfolio_api_groups_published_photos_by_chapter(self):
+        PortfolioPhoto.objects.all().delete()
+        GalleryChapter.objects.all().delete()
+
         later_chapter = GalleryChapter.objects.create(
             title="Perhekuvat",
             display_order=2,
@@ -53,6 +57,11 @@ class PublicContentApiTests(TestCase):
         first_chapter = GalleryChapter.objects.create(
             title="Hääkuvat",
             display_order=1,
+            cover_image="portfolio/covers/wedding-cover.jpg",
+        )
+        GalleryChapter.objects.create(
+            title="Parikuvat",
+            display_order=3,
         )
         hidden_chapter = GalleryChapter.objects.create(
             title="Piilotettu luku",
@@ -86,12 +95,22 @@ class PublicContentApiTests(TestCase):
         chapters = response.json()
         self.assertEqual(
             [chapter["title"] for chapter in chapters],
-            ["Hääkuvat", "Perhekuvat"],
+            ["Hääkuvat", "Perhekuvat", "Parikuvat"],
         )
         self.assertEqual(
             [photo["title"] for photo in chapters[0]["photos"]],
             ["Hääkuva"],
         )
+        self.assertEqual(
+            chapters[0]["cover_image"],
+            "/media/portfolio/covers/wedding-cover.jpg",
+        )
+        self.assertEqual(
+            chapters[1]["cover_image"],
+            "/media/portfolio/family.jpg",
+        )
+        self.assertIsNone(chapters[2]["cover_image"])
+        self.assertEqual(chapters[2]["photos"], [])
         self.assertEqual(
             chapters[0]["photos"][0]["image"],
             "/media/portfolio/wedding.jpg",
@@ -170,8 +189,17 @@ class PublicContentApiTests(TestCase):
         content.save()
 
         self.assertEqual(
-            ContactLink.objects.get().url,
+            ContactLink.objects.get(label="Instagram").url,
             "https://www.instagram.com/hiltunenphotography/",
+        )
+        self.assertEqual(
+            list(
+                ContactLink.objects.filter(
+                    url="",
+                    is_published=False,
+                ).values_list("label", flat=True)
+            ),
+            ["Website", "Facebook", "TikTok", "WhatsApp", "Pinterest"],
         )
         ContactLink.objects.all().delete()
         ContactLink.objects.create(
@@ -188,6 +216,12 @@ class PublicContentApiTests(TestCase):
             label="Piilotettu",
             url="https://example.com/hidden",
             is_published=False,
+            display_order=0,
+        )
+        ContactLink.objects.create(
+            label="Osoitteeton",
+            url="",
+            is_published=True,
             display_order=0,
         )
 
@@ -210,3 +244,38 @@ class PublicContentApiTests(TestCase):
             [link["label"] for link in data["contact"]["links"]],
             ["Instagram", "Myöhempi"],
         )
+
+
+class AdminDashboardTests(TestCase):
+    def test_dashboard_shows_task_links_for_site_content(self):
+        admin_user = get_user_model().objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="test-password",
+        )
+        self.client.force_login(admin_user)
+
+        response = self.client.get("/admin/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Tervetuloa sisällönhallintaan")
+        self.assertContains(response, "Etusivun kuvat")
+        self.assertContains(response, "Portfolion kategoriat ja kansikuvat")
+        self.assertContains(response, "Kaikki hallintanäkymät")
+
+    def test_admin_login_accepts_the_site_proxy_origin(self):
+        client = Client(enforce_csrf_checks=True)
+        login_page = client.get("/admin/login/")
+        csrf_token = login_page.cookies["csrftoken"].value
+
+        response = client.post(
+            "/admin/login/",
+            {
+                "username": "not-a-user",
+                "password": "not-a-password",
+                "csrfmiddlewaretoken": csrf_token,
+            },
+            HTTP_ORIGIN="http://127.0.0.1:5173",
+        )
+
+        self.assertEqual(response.status_code, 200)

@@ -10,7 +10,9 @@ function App() {
     .replace(/\/+$/, "")
     .toLowerCase() || "/";
   let page = <Etusivu />;
-  if (path === "/portfolio") page = <Galleria />;
+  if (path === "/portfolio" || path.startsWith("/portfolio/")) {
+    page = <Galleria />;
+  }
   if (path === "/palvelut") page = <Palvelut />;
   if (path === "/yhteystiedot") page = <Yhteystiedot />;
   if (path === "/minä" || path === "/minusta") page = <Minä />;
