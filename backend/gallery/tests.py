@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 
@@ -201,6 +202,10 @@ class PublicContentApiTests(TestCase):
             ),
             ["Website", "Facebook", "TikTok", "WhatsApp", "Pinterest"],
         )
+        self.assertEqual(
+            ContactLink.objects.get(label="WhatsApp").destination_type,
+            ContactLink.DestinationType.WHATSAPP,
+        )
         ContactLink.objects.all().delete()
         ContactLink.objects.create(
             label="Myöhempi",
@@ -224,6 +229,12 @@ class PublicContentApiTests(TestCase):
             is_published=True,
             display_order=0,
         )
+        ContactLink.objects.create(
+            label="WhatsApp",
+            destination_type=ContactLink.DestinationType.WHATSAPP,
+            phone_number="+358 40 123 4567",
+            display_order=3,
+        )
 
         response = self.client.get("/api/pages/")
 
@@ -242,8 +253,34 @@ class PublicContentApiTests(TestCase):
         self.assertEqual(data["contact"]["intro"], "Olen täällä.")
         self.assertEqual(
             [link["label"] for link in data["contact"]["links"]],
-            ["Instagram", "Myöhempi"],
+            ["Instagram", "Myöhempi", "WhatsApp"],
         )
+        self.assertEqual(
+            data["contact"]["links"][2]["url"],
+            "https://wa.me/358401234567",
+        )
+        self.assertEqual(
+            data["contact"]["links"][2]["destination_type"],
+            ContactLink.DestinationType.WHATSAPP,
+        )
+        self.assertEqual(
+            data["contact"]["links"][2]["phone_number"],
+            "+358 40 123 4567",
+        )
+
+    def test_published_whatsapp_link_requires_an_international_number(self):
+        link = ContactLink(
+            label="WhatsApp",
+            destination_type=ContactLink.DestinationType.WHATSAPP,
+            phone_number="",
+        )
+
+        with self.assertRaises(ValidationError):
+            link.full_clean()
+
+        link.phone_number = "12345"
+        with self.assertRaises(ValidationError):
+            link.full_clean()
 
 
 class AdminDashboardTests(TestCase):

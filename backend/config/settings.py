@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,22 +22,47 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# Use DJANGO_SECRET_KEY in hosted environments; this fallback is for local development only.
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-local-development-only",
-)
+def env_list(name):
+    return [
+        value.strip()
+        for value in os.environ.get(name, "").split(",")
+        if value.strip()
+    ]
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://youth-fort-leu-sue.trycloudflare.com",
-]
+DEBUG = os.environ.get("DEBUG", "true").lower() in {"1", "true", "yes"}
 
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set when DEBUG is false.")
+    SECRET_KEY = "django-insecure-local-development-only"
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS")
+if DEBUG:
+    ALLOWED_HOSTS.extend(["localhost", "127.0.0.1"])
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS.extend(
+        [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "https://*.trycloudflare.com",
+        ]
+    )
+for host in [RENDER_EXTERNAL_HOSTNAME, *env_list("DJANGO_ALLOWED_HOSTS")]:
+    if host:
+        CSRF_TRUSTED_ORIGINS.append(f"https://{host}")
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 
 # Application definition
 
@@ -58,6 +85,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+if not DEBUG:
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 ROOT_URLCONF = 'config.urls'
 
@@ -88,6 +117,16 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    import dj_database_url
+
+    DATABASES["default"] = dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=not DEBUG,
+    )
 
 
 # Password validation
@@ -124,17 +163,50 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+FRONTEND_DIST_DIR = BASE_DIR.parent / "dist"
+STATICFILES_DIRS = (
+    [FRONTEND_DIST_DIR] if FRONTEND_DIST_DIR.is_dir() else []
+)
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
+    },
+}
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR
+MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", str(BASE_DIR)))
 
 
 # Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# Configure EMAIL_HOST and the related variables in the host if email is needed.
+if DEBUG:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        },
+    }
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": os.environ.get("EMAIL_HOST", "localhost"),
+                "port": int(os.environ.get("EMAIL_PORT", "587")),
+                "username": os.environ.get("EMAIL_HOST_USER") or None,
+                "password": os.environ.get("EMAIL_HOST_PASSWORD") or None,
+                "use_tls": os.environ.get("EMAIL_USE_TLS", "true").lower()
+                in {"1", "true", "yes"},
+                "use_ssl": os.environ.get("EMAIL_USE_SSL", "false").lower()
+                in {"1", "true", "yes"},
+            },
+        },
+    }

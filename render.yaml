@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: hiltunen-photography
+    runtime: docker
+    plan: 0.5c-512mb
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    preDeployCommand: python manage.py migrate --noinput
+    disk:
+      name: uploaded-media
+      mountPath: /var/data
+      sizeGB: 10
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: MEDIA_ROOT
+        value: /var/data
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hiltunen-photography-db
+          property: connectionString
+
+databases:
+  - name: hiltunen-photography-db
+    databaseName: hiltunenphotography
+    user: hiltunenphotography
+    plan: 0.1c-256mb
+    region: frankfurt

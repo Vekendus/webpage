@@ -1,6 +1,7 @@
 # Frontend dependencies and build output
 node_modules/
 dist/
+**/staticfiles/
 
 # Python environments and generated files
 **/.venv/

@@ -136,12 +136,29 @@ class OtherPageContentAdmin(admin.ModelAdmin):
 
 @admin.register(ContactLink)
 class ContactLinkAdmin(admin.ModelAdmin):
-    list_display = ("label", "url", "is_published", "display_order")
+    list_display = (
+        "label",
+        "destination_type",
+        "url",
+        "phone_number",
+        "is_published",
+        "display_order",
+    )
     list_editable = ("is_published", "display_order")
     list_filter = ("is_published",)
-    search_fields = ("label", "url")
+    search_fields = ("label", "url", "phone_number")
     ordering = ("display_order", "id")
     fieldsets = (
-        ("Linkin tiedot", {"fields": ("label", "url")}),
+        (
+            "Yhteydenottotavan tiedot",
+            {
+                "fields": (
+                    "label",
+                    "destination_type",
+                    "url",
+                    "phone_number",
+                )
+            },
+        ),
         ("Julkaisu ja järjestys", {"fields": ("is_published", "display_order")}),
     )

@@ -113,6 +113,20 @@ def other_page_content(request):
             status=404,
         )
 
+    contact_links = []
+    for link in ContactLink.objects.filter(is_published=True):
+        url = link.public_url
+        if url:
+            contact_links.append(
+                {
+                    "id": link.id,
+                    "label": link.label,
+                    "destination_type": link.destination_type,
+                    "url": url,
+                    "phone_number": link.phone_number,
+                }
+            )
+
     data = {
         "gallery": {
             "eyebrow": content.gallery_eyebrow,
@@ -131,16 +145,7 @@ def other_page_content(request):
         "contact": {
             "heading": content.contact_heading,
             "intro": content.contact_intro,
-            "links": [
-                {
-                    "id": link.id,
-                    "label": link.label,
-                    "url": link.url,
-                }
-                for link in ContactLink.objects.filter(
-                    is_published=True
-                ).exclude(url="")
-            ],
+            "links": contact_links,
         },
     }
     return JsonResponse(data)

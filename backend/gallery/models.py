@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -189,13 +190,33 @@ class OtherPageContent(models.Model):
 
 
 class ContactLink(models.Model):
+    class DestinationType(models.TextChoices):
+        URL = "url", "Verkko- tai someosoite"
+        WHATSAPP = "whatsapp", "WhatsApp-puhelinnumero"
+
     label = models.CharField("linkin teksti", max_length=100)
+    destination_type = models.CharField(
+        "kohteen tyyppi",
+        max_length=20,
+        choices=DestinationType.choices,
+        default=DestinationType.URL,
+    )
     url = models.URLField(
-        "linkin osoite",
+        "verkko- tai someosoite",
         max_length=500,
         blank=True,
         default="",
-        help_text="Lisää koko osoite, esimerkiksi https://instagram.com/oma-tili.",
+        help_text="Käytä tätä kenttää verkko- ja someosoitteille.",
+    )
+    phone_number = models.CharField(
+        "WhatsApp-puhelinnumero",
+        max_length=30,
+        blank=True,
+        default="",
+        help_text=(
+            "Lisää maatunnuksella, esimerkiksi +358 40 123 4567. "
+            "WhatsApp-linkki muodostetaan numerosta automaattisesti."
+        ),
     )
     is_published = models.BooleanField("julkaistu", default=True)
     display_order = models.PositiveIntegerField("järjestys", default=0)
@@ -207,3 +228,40 @@ class ContactLink(models.Model):
 
     def __str__(self):
         return self.label
+
+    @property
+    def public_url(self):
+        if self.destination_type == self.DestinationType.WHATSAPP:
+            digits = "".join(
+                character
+                for character in self.phone_number
+                if character in "0123456789"
+            )
+            return f"https://wa.me/{digits}" if digits else ""
+        return self.url
+
+    def clean(self):
+        super().clean()
+        if self.destination_type == self.DestinationType.WHATSAPP:
+            digits = "".join(
+                character
+                for character in self.phone_number
+                if character in "0123456789"
+            )
+            if self.is_published and not digits:
+                raise ValidationError(
+                    {
+                        "phone_number": (
+                            "Anna julkaistulle WhatsApp-linkille puhelinnumero."
+                        )
+                    }
+                )
+            if digits and not 8 <= len(digits) <= 15:
+                raise ValidationError(
+                    {
+                        "phone_number": (
+                            "Anna WhatsApp-numero maatunnuksella "
+                            "(8–15 numeroa)."
+                        )
+                    }
+                )

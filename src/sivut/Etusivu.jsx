@@ -79,7 +79,7 @@ function App() {
           <p className="eyebrow">HILTUNEN PHOTOGRAPHY</p>
           <img
             className="intro-photo"
-            src="/images/home-intro.jpg"
+            src={`${import.meta.env.BASE_URL}images/home-intro.jpg`}
             alt="Pari tanssii luonnonvalossa metsäaukealla."
             loading="lazy"
           />
