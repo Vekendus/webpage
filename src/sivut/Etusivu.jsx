@@ -61,15 +61,14 @@ function App() {
           <div className="hero-content">
             <p className="eyebrow">Pieniä hetkiä, suuria tarinoita</p>
             <h1>
-              Tehdään
+              Muistoja
               <br />
-              onnellisuudesta <em> ikuista.</em>
+              jotka elävät <em> ikuisesti.</em>
             </h1>
             <p className="hero-copy">
               Rakkauden täyteisiä hetkiä ja pieniä yksityiskohtia - tarinoita joihin on ihana palata.
             </p>
           </div>
-          <p className="hero-caption">VALOA, LÄHEISYYTTÄ JA ELÄMÄÄ</p>
           <a className="scroll-cue" href="#galleria" aria-label="Vieritä galleriaan">
             <span />
           </a>
